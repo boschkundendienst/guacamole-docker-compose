@@ -75,6 +75,7 @@
 # version            date              comment
 # 0.1                2017-06-28        initial release
 # 0.2                2017-10-09        minor fixes + internal GIT push
+# 0.3                2017-10-09        minor fixes + public GIT push
 ####################################################################################
 
 version: '2.0'

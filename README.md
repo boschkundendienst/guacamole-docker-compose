@@ -6,7 +6,7 @@ Apache Guacamole (incubating) is a clientless remote desktop gateway. It support
 
 It supports RDP, SSH, Telnet and VNC and is the fastest HTML5 gateway I know. Checkout the projects [homepage](https://guacamole.incubator.apache.org/) for more information.
 
-# Prerequisites
+## Prerequisites
 You need a working **docker** installation and **docker-compose** running on your machine.
 
 ## Quick start
@@ -29,7 +29,7 @@ The following part of docker-compose.yml will create a network with name `guacne
 ~~~python
 ...
 # networks
-# create a network 'guacnetwork' in mode 'bridged'
+# create a network 'guacnetwork_compose' in mode 'bridged'
 networks:
   guacnetwork_compose:
     driver: bridge
@@ -129,7 +129,7 @@ The following part of docker-compose.yml will create an instance of nginx that m
 ...
 ~~~
 
-#### prepare.sh
+## prepare.sh
 `prepare.sh` is a small script that creates `./init/initdb.sql` by downloading the docker image `guacamole/guacamole` and start it like this:
 
 ~~~bash
@@ -137,6 +137,6 @@ docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgres > ./
 ~~~
 It creates the necessary database initialization file for postgres.
 
-#### Reset
+## reset.sh
 To reset everything to the beginning, just run `./reset.sh`.
 

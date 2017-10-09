@@ -34,7 +34,7 @@
 version: '2.0'
 
 # networks
-# create a network 'guacnetwork' in mode 'bridged'
+# create a network 'guacnetwork_compose' in mode 'bridged'
 networks:
   guacnetwork_compose:
     driver: bridge

@@ -1,30 +1,76 @@
 ####################################################################################
-# docker-compose file for Apache Guacamole 
+# docker-compose file for Apache Guacamole
 # created by PCFreak 2017-06-28
 #
-# Apache Guacamole is a clientless remote desktop gateway.
-# It supports standard protocols like VNC, RDP, and SSH.
-# We call it clientless because no plugins or client software are required.
-# Thanks to HTML5, once Guacamole is installed on a server,
-# all you need to access your desktops is a web browser.
-# 
-# DB-Init script is in './init/initdb.sql' it has been created executing
-#  > docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgres > ./init/initdb.sql
-# once.
+# Apache Guacamole is a clientless remote desktop gateway. It supports standard
+# protocols like VNC, RDP, and SSH. We call it clientless because no plugins or
+# client software are required. Thanks to HTML5, once Guacamole is installed on
+# a server, all you need to access your desktops is a web browser.
+####################################################################################
 #
-# DATA-DIR       is in './data'
-#  If you want to change that check the lines:
-#      - ./init:/docker-entrypoint-initdb.d:ro
-#      - ./data:/var/lib/postgresql/data:rw
-#  in the postgres/service section
+# What does this file do?
+#
+# Using docker-compose it will:
+#
+# - create a network 'guacnetwork_compose' with the 'bridge' driver.
+# - create a service 'guacd_compose' from 'guacamole/guacd' connected to 'guacnetwork'
+# - create a service 'postgres_guacamole_compose' (1) from 'postgres' connected to 'guacnetwork'
+# - create a service 'guacamole_compose' (2)  from 'guacamole/guacamole/' conn. to 'guacnetwork'
+# - create a service 'nginx_guacamole_compose' (3) from 'nginx' connected to 'guacnetwork'
+#
+# (1)
+#  DB-Init script is in './init/initdb.sql' it has been created executing
+#  'docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgres > ./init/initdb.sql'
+#  once.
+#  DATA-DIR       is in './data'
+#  If you want to change the DB password change all lines with 'POSTGRES_PASSWORD:' and
+#  change it to your needs before first start.
+#  To start from scratch delete './data' dir completely
+#  './data' will hold all data after first start!
+#  The initdb.d scripts are only executed the first time the container is started
+#  (and the database files are empty). If the database files already exist then the initdb.d
+#  scripts are ignored (e.g. when you mount a local directory or when docker-compose saves
+#  the volume and reuses it for the new container).
+#
+#  !!!!! MAKE SURE your folder './init' is executable (chmod +x ./init)
+#  !!!!! or 'initdb.sql' will be ignored!
 #  
-# If you want to change the DB password change all lines with
-# 'POSTGRES_PASSWORD:' and change it to your needs before first
-# start.
+#  './data' will hold all data after first start!
 #
-# To start from scratch delete './data' dir completely
+# (2)
+#  Make sure you use the same value for 'POSTGRES_USER' and 'POSTGRES_PASSWORD'
+#  as configured under (1)
 #
-# './data' will hold all data after first start!
+# (3)
+#  ./nginx/nginx.conf will be mapped read-only into the container at /etc/nginx/nginx.conf
+#  ./nginx/mysite.template will be mapped into the container at /etc/nginx/conf.d/mysite.template
+#  ./nginx/ssl will be mapped into the container at /etc/nginx/ssl
+#  At startup a self-signed certificate will be created. If you want to use your own certs
+#  just remove the part that generates the certs from the 'command' section and replace
+#  'self-ssl.key' and 'self.cert' with your certificate.
+#  To debug nginx replace '&& nginx -g 'daemon off' with '&& nginx-debug -g 'daemon off'
+#  nginx will export port 8443 to the outside world, make sure that this port is reachable
+#  on your system from the "outside world". All other traffice is only internal.
+#
+#  You could remove the entire 'nginx' service from this file if you want to use your own
+#  reverse proxy in front of guacamole. If doing so, make sure you change the line
+#       - 8080/tcp
+#   to   - 8080:8080/tcp
+#  within the 'guacamole' service. This will expose the guacamole webinterface directly
+#  on port 8080 and you can use it for your own purposes.
+#
+# !!!!! FOR INITAL SETUP (after git clone) run ./prepare.sh once
+#
+# !!!!! FOR A FULL RESET (WILL ERASE YOUR DATABASE, YOUR FILES, YOUR RECORDS AND CERTS) DO A
+# !!!!!  ./reset.sh
+#
+#
+# The initial login to the guacamole webinterface is:
+#
+#     Username: guacadmin
+#     Password: guacadmin
+#
+# Make sure you change it immediately!
 #
 # version            date              comment
 # 0.1                2017-06-28        initial release
@@ -95,7 +141,7 @@ services:
 ####
   # nginx
   nginx:
-   container_name: nginx_guacamole_elitearch
+   container_name: nginx_guacamole_compose
    restart: always
    image: nginx
    volumes:

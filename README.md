@@ -115,17 +115,18 @@ The following part of docker-compose.yml will create an instance of nginx that m
    restart: always
    image: nginx
    volumes:
+   - ./nginx/ssl/self.cert:/etc/nginx/ssl/self.cert:ro
+   - ./nginx/ssl/self-ssl.key:/etc/nginx/ssl/self-ssl.key:ro
    - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-   - ./nginx/mysite.template:/etc/nginx/conf.d/mysite.template
-   - ./nginx/ssl:/etc/nginx/ssl
+   - ./nginx/mysite.template:/etc/nginx/conf.d/default.conf:ro
    ports:
    - 8443:443
    links:
    - guacamole
    networks:
      guacnetwork_compose:
-   # install openssl, create self-signed certificate and run nginx
-   command: /bin/bash -c "apt-get -y update && apt-get -y install openssl && openssl req -nodes -newkey rsa:2048 -new -x509 -keyout /etc/nginx/ssl/self-ssl.key -out /etc/nginx/ssl/self.cert -subj '/C=DE/ST=BY/L=Hintertupfing/O=Dorfwirt/OU=Theke/CN=www.createyourown.domain/emailAddress=docker@createyourown.domain' && cp -f -s /etc/nginx/conf.d/mysite.template /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+   # run nginx
+   command: /bin/bash -c "nginx -g 'daemon off;'"
 ...
 ~~~
 
@@ -135,8 +136,15 @@ The following part of docker-compose.yml will create an instance of nginx that m
 ~~~bash
 docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgres > ./init/initdb.sql
 ~~~
+
 It creates the necessary database initialization file for postgres.
+
+`prepare.sh` also creates the self-signed certificate `./nginx/ssl/self.cert` and the private key `./nginx/ssl/self-ssl.key` which are used
+by nginx for https.
 
 ## reset.sh
 To reset everything to the beginning, just run `./reset.sh`.
 
+**Disclaimer**
+
+Downloading and executing scripts from the internet may harm your computer. Make sure to check the source of the scripts before executing them!

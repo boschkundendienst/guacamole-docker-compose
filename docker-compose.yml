@@ -141,7 +141,6 @@ services:
     restart: always
 
 ########### optional ##############
-####
   # nginx
   nginx:
    container_name: nginx_guacamole_compose

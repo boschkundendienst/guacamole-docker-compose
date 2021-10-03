@@ -109,7 +109,7 @@ services:
       POSTGRES_DB: guacamole_db
       POSTGRES_PASSWORD: ChooseYourOwnPasswordHere1234
       POSTGRES_USER: guacamole_user
-    image: postgres
+    image: postgres:13.4
     networks:
       guacnetwork_compose:
     restart: always

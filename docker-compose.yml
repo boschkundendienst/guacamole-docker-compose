@@ -109,13 +109,13 @@ services:
       POSTGRES_DB: guacamole_db
       POSTGRES_PASSWORD: 'ChooseYourOwnPasswordHere1234'
       POSTGRES_USER: guacamole_user
-    image: postgres:13.4
+    image: postgres:13.4-buster
     networks:
       guacnetwork_compose:
     restart: always
     volumes:
-    - ./init:/docker-entrypoint-initdb.d:ro
-    - ./data:/var/lib/postgresql/data:rw
+    - ./init:/docker-entrypoint-initdb.d:z
+    - ./data:/var/lib/postgresql/data:Z
 
   # guacamole
   guacamole:

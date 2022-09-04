@@ -3,20 +3,6 @@ server {
     listen       443 ssl http2;
     server_name  localhost;
 
-        ssl_certificate /etc/nginx/ssl/self.cert;
-        ssl_certificate_key /etc/nginx/ssl/self-ssl.key;
-
-        ssl_protocols TLSv1.2 TLSv1.3;
-        ssl_prefer_server_ciphers on;
-        ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
-        ssl_ecdh_curve secp384r1;
-        ssl_session_cache shared:SSL:10m;
-        ssl_session_tickets off;
-        ssl_stapling off;
-        ssl_stapling_verify off;
-#        resolver 8.8.8.8 8.8.4.4 valid=300s;
-#        resolver_timeout 5s;
-
     #charset koi8-r;
     #access_log  /var/log/nginx/host.access.log  main;
 

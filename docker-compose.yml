@@ -73,6 +73,7 @@ services:
       POSTGRES_HOSTNAME: postgres
       POSTGRES_PASSWORD: 'ChooseYourOwnPasswordHere1234'
       POSTGRES_USER: guacamole_user
+      GUACAMOLE_HOME: '/guac_home'
     links:
     - guacd
     networks:

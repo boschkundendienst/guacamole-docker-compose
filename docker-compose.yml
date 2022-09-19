@@ -61,7 +61,7 @@ services:
 
   # guacd
   guacd:
-    container_name: guacd_compose
+    container_name: guacamole_guacd
     image: guacamole/guacd
     networks:
       guacnetwork_compose:
@@ -72,7 +72,7 @@ services:
 
   # postgres
   postgres:
-    container_name: postgres_guacamole_compose
+    container_name: guacamole_postgres
     image: postgres:13.4-buster
     environment:
       PGDATA: /var/lib/postgresql/data/guacamole
@@ -88,7 +88,7 @@ services:
 
   # guacamole
   guacamole:
-    container_name: guacamole_compose
+    container_name: guacamole_guacamole
     image: guacamole/guacamole
     depends_on:
     - guacd

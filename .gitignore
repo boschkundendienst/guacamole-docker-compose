@@ -4,3 +4,4 @@ nginx/ssl/
 init/initdb.sql
 drive/
 record/
+.env

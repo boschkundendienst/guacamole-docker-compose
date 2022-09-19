@@ -58,6 +58,7 @@ networks:
 
 # services
 services:
+
   # guacd
   guacd:
     container_name: guacd_compose
@@ -68,15 +69,16 @@ services:
     volumes:
     - ./drive:/drive:rw
     - ./record:/record:rw
+
   # postgres
   postgres:
     container_name: postgres_guacamole_compose
+    image: postgres:13.4-buster
     environment:
       PGDATA: /var/lib/postgresql/data/guacamole
       POSTGRES_DB: guacamole_db
       POSTGRES_PASSWORD: 'ChooseYourOwnPasswordHere1234'
       POSTGRES_USER: guacamole_user
-    image: postgres:13.4-buster
     networks:
       guacnetwork_compose:
     restart: always
@@ -87,6 +89,7 @@ services:
   # guacamole
   guacamole:
     container_name: guacamole_compose
+    image: guacamole/guacamole
     depends_on:
     - guacd
     - postgres
@@ -96,11 +99,12 @@ services:
       POSTGRES_HOSTNAME: postgres
       POSTGRES_PASSWORD: 'ChooseYourOwnPasswordHere1234'
       POSTGRES_USER: guacamole_user
-    image: guacamole/guacamole
     links:
     - guacd
     networks:
       guacnetwork_compose:
     ports:
-    - 8080:8080/tcp # Guacamole is on :8080/guacamole, not /.
+    - 8080:8080/tcp # Guacamole is on :8080/guacamole
     restart: always
+    volumes:
+    - "./guac_home:/guac_home"

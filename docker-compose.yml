@@ -1,11 +1,5 @@
 ####################################################################################
 # docker-compose file for Apache Guacamole
-# created by PCFreak 2017-06-28
-#
-# Apache Guacamole is a clientless remote desktop gateway. It supports standard
-# protocols like VNC, RDP, and SSH. We call it clientless because no plugins or
-# client software are required. Thanks to HTML5, once Guacamole is installed on
-# a server, all you need to access your desktops is a web browser.
 ####################################################################################
 #
 # What does this file do?
@@ -16,31 +10,11 @@
 # - create a service 'guacd_compose' from 'guacamole/guacd' connected to 'guacnetwork'
 # - create a service 'postgres_guacamole_compose' (1) from 'postgres' connected to 'guacnetwork'
 # - create a service 'guacamole_compose' (2)  from 'guacamole/guacamole/' conn. to 'guacnetwork'
-# - create a service 'nginx_guacamole_compose' (3) from 'nginx' connected to 'guacnetwork'
 #
 # (2)
 #  Make sure you use the same value for 'POSTGRES_USER' and 'POSTGRES_PASSWORD'
 #  as configured under (1)
 #
-# (3)
-#  ./nginx/nginx.conf will be mapped read-only into the container at /etc/nginx/nginx.conf
-#  ./nginx/mysite.template will be mapped into the container at /etc/nginx/conf.d/mysite.template
-#  ./nginx/ssl will be mapped into the container at /etc/nginx/ssl
-#  At startup a self-signed certificate will be created. If you want to use your own certs
-#  just remove the part that generates the certs from the 'command' section and replace
-#  'self-ssl.key' and 'self.cert' with your certificate.
-#  To debug nginx replace '&& nginx -g 'daemon off' with '&& nginx-debug -g 'daemon off'
-#  nginx will export port 8443 to the outside world, make sure that this port is reachable
-#  on your system from the "outside world". All other traffice is only internal.
-#
-#  You could remove the entire 'nginx' service from this file if you want to use your own
-#  reverse proxy in front of guacamole. If doing so, make sure you change the line
-#       - 8080/tcp
-#   to   - 8080:8080/tcp
-#  within the 'guacamole' service. This will expose the guacamole webinterface directly
-#  on port 8080 and you can use it for your own purposes.
-#  Do note, guacamole is available on :8080/guacamole, not /.
-
 # The initial login to the guacamole webinterface is:
 #
 #     Username: guacadmin

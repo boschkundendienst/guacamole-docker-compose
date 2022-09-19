@@ -107,4 +107,4 @@ services:
     - 8080:8080/tcp # Guacamole is on :8080/guacamole
     restart: always
     volumes:
-    - "./guac_home:/guac_home"
+    - "/home/vargrant/git/democloud-docker-guacamole/guac_home:/guac_home"

@@ -12,8 +12,8 @@
 #
 # Using docker-compose it will:
 #
-# - create a network 'guacnetwork_compose' with the 'bridge' driver.
-# - create a service 'guacd_compose' from 'guacamole/guacd' connected to 'guacnetwork'
+# - create a network 'guacnetwork_compose'
+# - create a service 'guacd_compose' from 'guacamole/guacd' connected to the host network
 # - create a service 'postgres_guacamole_compose' (1) from 'postgres' connected to 'guacnetwork'
 # - create a service 'guacamole_compose' (2)  from 'guacamole/guacamole/' conn. to 'guacnetwork'
 # - create a service 'nginx_guacamole_compose' (3) from 'nginx' connected to 'guacnetwork'
@@ -84,10 +84,8 @@
 version: '2.0'
 
 # networks
-# create a network 'guacnetwork_compose' in mode 'bridged'
 networks:
   guacnetwork_compose:
-    driver: bridge
 
 # services
 services:
@@ -95,8 +93,7 @@ services:
   guacd:
     container_name: guacd_compose
     image: guacamole/guacd
-    networks:
-      guacnetwork_compose:
+    network_mode: host # connect to host to allow WOL to work
     restart: always
     volumes:
     - ./drive:/drive:rw
@@ -124,7 +121,7 @@ services:
     - guacd
     - postgres
     environment:
-      GUACD_HOSTNAME: guacd
+      GUACD_HOSTNAME: 172.17.0.1 # docker's bridge gateway
       POSTGRES_DATABASE: guacamole_db
       POSTGRES_HOSTNAME: postgres
       POSTGRES_PASSWORD: 'ChooseYourOwnPasswordHere1234'
@@ -153,7 +150,7 @@ services:
    - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
    - ./nginx/mysite.template:/etc/nginx/conf.d/default.conf:ro
    ports:
-   - 8443:443
+   - 9443:443 # change to an available external port
    links:
    - guacamole
    networks:

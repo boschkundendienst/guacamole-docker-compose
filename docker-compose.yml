@@ -79,6 +79,7 @@
 # 0.3                2017-10-09        minor fixes + public GIT push
 # 0.4                2019-08-14        creating of ssl certs now in prepare.sh
 #                                      simplified nginx startup commands
+# 0.5                2022-09-23        move guacd to host network to get WOL working
 ####################################################################################
 
 version: '2.0'
@@ -150,7 +151,7 @@ services:
    - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
    - ./nginx/mysite.template:/etc/nginx/conf.d/default.conf:ro
    ports:
-   - 9443:443 # change to an available external port
+   - 8443:443 # change to an available external port
    links:
    - guacamole
    networks:

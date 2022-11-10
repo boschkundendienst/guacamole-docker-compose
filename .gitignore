@@ -1,6 +1,2 @@
-.gitignore
-data/
-nginx/ssl/
-init/initdb.sql
-drive/
-record/
+ubuntu-xenial-16.04-cloudimg-console.log
+.vagrant/

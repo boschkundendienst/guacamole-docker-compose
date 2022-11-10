@@ -16,28 +16,28 @@ services:
        - './letsencrypt:/letsencrypt'
     restart: always
     environment:
-        TRAEFIK_API: true
-        TRAEFIK_API_DASHBOARD: true
-        TRAEFIK_API_INSECURE: true
-        TRAEFIK_CERTIFICATESRESOLVERS_LE: true
-        TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_CASERVER: https://acme-staging-v02.api.letsencrypt.org/directory   # Uncomment for using Letsencrypt staging server (Info at https://letsencrypt.org/docs/staging-environment/)
-        TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_EMAIL: ${LE_EMAIL:?err}
-        TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE: true
-        TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE_ENTRYPOINT: http
-        TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_STORAGE: /letsencrypt/acme.json
-        TRAEFIK_ENTRYPOINTS_HTTP: true
-        TRAEFIK_ENTRYPOINTS_HTTP_ADDRESS: 80
-        TRAEFIK_ENTRYPOINTS_HTTPS: true
-        TRAEFIK_ENTRYPOINTS_HTTPS_ADDRESS: 443
-        TRAEFIK_GLOBAL_CHECKNEWVERSION: false
-        TRAEFIK_GLOBAL_SENDANONYMOUSUSAGE: false
-        TRAEFIK_LOG: true
-        TRAEFIK_LOG_LEVEL: INFO
-        TRAEFIK_PROVIDERS_DOCKER: true
-        TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: false
-        TRAEFIK_PROVIDERS_DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME:-workfromhome-with-docker}_proxy_net
-        TRAEFIK_PROVIDERS_FILE_FILENAME: /etc/traefik/traefik.providers.file.toml
-        TRAEFIK_PROVIDERS_FILE_WATCH: true
+      TRAEFIK_API: true
+      TRAEFIK_API_DASHBOARD: true
+      TRAEFIK_API_INSECURE: true
+      TRAEFIK_CERTIFICATESRESOLVERS_LE: true
+      TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_CASERVER: https://acme-staging-v02.api.letsencrypt.org/directory   # Uncomment for using Letsencrypt staging server (Info at https://letsencrypt.org/docs/staging-environment/)
+      TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_EMAIL: ${LE_EMAIL:?err}
+      TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE: true
+      TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE_ENTRYPOINT: http
+      TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_STORAGE: /letsencrypt/acme.json
+      TRAEFIK_ENTRYPOINTS_HTTP: true
+      TRAEFIK_ENTRYPOINTS_HTTP_ADDRESS: 80
+      TRAEFIK_ENTRYPOINTS_HTTPS: true
+      TRAEFIK_ENTRYPOINTS_HTTPS_ADDRESS: 443
+      TRAEFIK_GLOBAL_CHECKNEWVERSION: false
+      TRAEFIK_GLOBAL_SENDANONYMOUSUSAGE: false
+      TRAEFIK_LOG: true
+      TRAEFIK_LOG_LEVEL: INFO
+      TRAEFIK_PROVIDERS_DOCKER: true
+      TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: false
+      TRAEFIK_PROVIDERS_DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME:-workfromhome-with-docker}_proxy_net
+      TRAEFIK_PROVIDERS_FILE_FILENAME: /etc/traefik/traefik.providers.file.toml
+      TRAEFIK_PROVIDERS_FILE_WATCH: true
 
   guacd:
     image: guacamole/guacd

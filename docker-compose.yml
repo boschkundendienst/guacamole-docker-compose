@@ -20,7 +20,7 @@ services:
       - TRAEFIK_API_DASHBOARD=true
       - TRAEFIK_API_INSECURE=true
       - TRAEFIK_CERTIFICATESRESOLVERS_LE=true
-      # - TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_CASERVER=https://acme-staging-v02.api.letsencrypt.org/directory   # Uncomment for using Letsencrypt staging server (Info at https://letsencrypt.org/docs/staging-environment/)
+      - TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_CASERVER=https://acme-staging-v02.api.letsencrypt.org/directory   # Uncomment for using Letsencrypt staging server (Info at https://letsencrypt.org/docs/staging-environment/)
       - TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_EMAIL=${LE_EMAIL:?err}
       - TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE=true
       - TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE_ENTRYPOINT=http

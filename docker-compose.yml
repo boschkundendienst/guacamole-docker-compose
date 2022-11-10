@@ -1,17 +1,53 @@
-version: '3'
+####################################################################################
+# docker-compose file for Apache Guacamole
+####################################################################################
+#
+# What does this file do?
+#
+# Using docker-compose it will:
+#
+# - create a network 'guacnetwork_compose' with the 'bridge' driver.
+# - create a service 'guacd_compose' from 'guacamole/guacd' connected to 'guacnetwork'
+# - create a service 'postgres_guacamole_compose' (1) from 'postgres' connected to 'guacnetwork'
+# - create a service 'guacamole_compose' (2)  from 'guacamole/guacamole/' conn. to 'guacnetwork'
+#
+# (2)
+#  Make sure you use the same value for 'POSTGRES_USER' and 'POSTGRES_PASSWORD'
+#  as configured under (1)
+#
+# The initial login to the guacamole webinterface is:
+#
+#     Username: guacadmin
+#     Password: guacadmin
+#
+####################################################################################
 
+version: '2.0'
+
+# networks
+# create a network 'guacnetwork_compose' in mode 'bridged'
+networks:
+  guacnetwork_compose:
+    driver: bridge
+
+# services
 services:
-  guacd:
-    image: guacamole/guacd
-    restart: always
-    container_name: guacamole-guacd
-    networks:
-      - backend
 
-  db:
+  # guacd
+  guacd:
+    container_name: ${GUACD_CONTAINER_NAME}
+    image: ${GUACD_IMAGE}
+    networks:
+      guacnetwork_compose:
+    restart: always
+    volumes:
+    - ./drive:/drive:rw
+    - ./record:/record:rw
+
+  mysql:
     image: mysql
     restart: always
-    container_name: guacamole-db
+    container_name: ${MYSQL_CONTAINER_NAME}
     environment:
         MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
         MYSQL_USER: ${MYSQL_USER}
@@ -21,23 +57,15 @@ services:
         - "./mysql:/var/lib/mysql"
         - "./mysql_init/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro"
     networks:
-        - backend
+      guacnetwork_compose:
 
+  # guacamole
   guacamole:
-    image: guacamole/guacamole
-    container_name: guacamole-app
-    restart: always
-    ports:
-      - 8081:8080
-    links:
-      - guacd:guacd
-      - db:mysql
+    container_name: ${GUACAMOLE_CONTAINER_NAME}
+    image: ${GUACAMOLE_IMAGE}
     depends_on:
-      - db
-      - guacd
-    volumes:
-      - "./guac_conf/server.xml:/usr/local/tomcat/conf/server.xml"
-      - "./guac_home:/guac_home"
+    - guacd
+    - mysql
     environment:
         GUACAMOLE_HOME: ${GUACAMOLE_HOME}
         MYSQL_HOSTNAME: ${MYSQL_HOSTNAME}
@@ -58,10 +86,12 @@ services:
         LDAP_MEMBER_ATTRIBUTE: ${LDAP_MEMBER_ATTRIBUTE}
         LDAP_USER_SEARCH_FILTER: ${LDAP_USER_SEARCH_FILTER:-(&(objectCategory=person)(objectclass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))}
         TOTP_ISSUER: ${FQDN_HOST_NAME}
+    links:
+    - guacd
     networks:
-      - backend
-      - proxy_net
-
-networks:
-  proxy_net:
-  backend:
+      guacnetwork_compose:
+    ports:
+    - 8080:8080/tcp # Guacamole is on :8080/guacamole
+    restart: always
+    volumes:
+    - "./guac_home:/guac_home"

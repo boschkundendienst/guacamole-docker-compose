@@ -13,10 +13,10 @@ services:
     restart: always
     container_name: guacamole-db
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-guacsomethingsecret4444}
-      - MYSQL_USER=${MYSQL_USER:-guacamole}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-guacsomethingsecret8888}
-      - MYSQL_DATABASE=${MYSQL_DATABASE:-guacamole}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USERe}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
     volumes:
       - ./mysql:/var/lib/mysql
       - ./mysql_init/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
@@ -41,9 +41,9 @@ services:
     environment:
       - GUACAMOLE_HOME=/guac_home
       - MYSQL_HOSTNAME=mysql
-      - MYSQL_DATABASE=${MYSQL_DATABASE:-guacamole}
-      - MYSQL_USER=${MYSQL_USER:-guacamole}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-guacsomethingsecret8888}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - GUACD_HOSTNAME=guacd
       - GUACD_PORT=4822
       - LDAP_HOSTNAME=${LDAP_HOSTNAME}

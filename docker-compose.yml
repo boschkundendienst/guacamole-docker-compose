@@ -1,50 +1,11 @@
 version: '3'
 
 services:
-  #traefik:
-  #  container_name: traefik
-  #  image: traefik:v2.6
-  #  networks:
-  #    - proxy_net
-  #  ports:
-  #    - "80:80"
-  #    - "443:443"
-  #    - "8088:8080"
-  #  volumes:
-  #     - '/var/run/docker.sock:/var/run/docker.sock:ro'
-  #     - './traefik_conf/traefik.providers.file.toml:/etc/traefik/traefik.providers.file.toml'
-  #     - './letsencrypt:/letsencrypt'
-  #  restart: always
-  #  environment:
-  #    TRAEFIK_API: ${TRAEFIK_API}
-  #    TRAEFIK_API_DASHBOARD: ${TRAEFIK_API_DASHBOARD}
-  #    TRAEFIK_API_INSECURE: ${TRAEFIK_API_INSECURE}
-  #    TRAEFIK_CERTIFICATESRESOLVERS_LE: ${TRAEFIK_CERTIFICATESRESOLVERS_LE}
-  #    TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_CASERVER: ${TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_CASERVER}
-  #    TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_EMAIL: ${TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_EMAIL}
-  #    TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE: ${TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE}
-  #    TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE_ENTRYPOINT: ${TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE_ENTRYPOINT}
-  #    TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_STORAGE: ${TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_STORAGE}
-  #    TRAEFIK_ENTRYPOINTS_HTTP: ${TRAEFIK_ENTRYPOINTS_HTTP}
-  #    TRAEFIK_ENTRYPOINTS_HTTP_ADDRESS: ${TRAEFIK_ENTRYPOINTS_HTTP_ADDRESS}
-  #    TRAEFIK_ENTRYPOINTS_HTTPS: ${TRAEFIK_ENTRYPOINTS_HTTPS}
-  #    TRAEFIK_ENTRYPOINTS_HTTPS_ADDRESS: ${TRAEFIK_ENTRYPOINTS_HTTPS_ADDRESS}
-  #    TRAEFIK_GLOBAL_CHECKNEWVERSION: ${TRAEFIK_GLOBAL_CHECKNEWVERSION}
-  #    TRAEFIK_GLOBAL_SENDANONYMOUSUSAGE: ${TRAEFIK_GLOBAL_SENDANONYMOUSUSAGE}
-  #    TRAEFIK_LOG: ${TRAEFIK_LOG}
-  #    TRAEFIK_LOG_LEVEL: ${TRAEFIK_LOG_LEVEL}
-  #    TRAEFIK_PROVIDERS_DOCKER: ${TRAEFIK_PROVIDERS_DOCKER}
-  #    TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: ${TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT}
-  #    TRAEFIK_PROVIDERS_FILE_FILENAME: ${TRAEFIK_PROVIDERS_FILE_FILENAME}
-  #    TRAEFIK_PROVIDERS_FILE_WATCH: ${TRAEFIK_PROVIDERS_FILE_WATCH}
-  #    TRAEFIK_PROVIDERS_DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME:-workfromhome-with-docker}_proxy_net
 
   guacd:
     image: guacamole/guacd
     restart: always
     container_name: guacamole-guacd
-  #  depends_on:
-  #    - traefik
     networks:
       - backend
 
@@ -52,8 +13,6 @@ services:
     image: mysql
     restart: always
     container_name: guacamole-db
-  #  depends_on:
-  #    - traefik
     environment:
         MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
         MYSQL_USER: ${MYSQL_USER}
@@ -102,28 +61,6 @@ services:
       TOTP_ISSUER: ${FQDN_HOST_NAME}
     networks:
       - backend
-  #    - proxy_net
-    #labels:
-      #- "traefik.enable=true"
-      ## HTTP
-      #- "traefik.http.routers.guac.rule=Host(`${FQDN_HOST_NAME:?err}`)"
-      #- "traefik.http.routers.guac.entrypoints=http"
-      #- "traefik.http.routers.guac.middlewares=https_redirect_permanent@file"
-      ## HTTPS
-      #- "traefik.http.routers.guac_ssl.rule=Host(`${FQDN_HOST_NAME:?err}`)"
-      #- "traefik.http.routers.guac_ssl.entrypoints=https"
-      #- "traefik.http.routers.guac_ssl.service=guac"
-      #- "traefik.http.routers.guac_ssl.middlewares=guac_headers,guac_addprefix"
-      #- "traefik.http.routers.guac_ssl.tls=true"
-      #- "traefik.http.routers.guac_ssl.tls.certResolver=le"
-      #- "traefik.http.routers.guac_ssl.tls.options=default"
-      ## Middleware
-      #- "traefik.http.middlewares.guac_headers.headers.stsincludesubdomains=true"
-      #- "traefik.http.middlewares.guac_headers.headers.stsseconds=315360000"
-      #- "traefik.http.middlewares.guac_headers.headers.forcestsheader=true"
-      #- "traefik.http.middlewares.guac_addprefix.addprefix.prefix=/guacamole"
-      ## Service
-      #- "traefik.http.services.guac.loadbalancer.server.port=8080"
 
 networks:
 #  proxy_net:

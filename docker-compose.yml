@@ -105,27 +105,27 @@ services:
     networks:
       - backend
       - proxy_net
-    labels:
-      - "traefik.enable=true"
-      # HTTP
-      - "traefik.http.routers.guac.rule=Host(`${FQDN_HOST_NAME:?err}`)"
-      - "traefik.http.routers.guac.entrypoints=http"
-      - "traefik.http.routers.guac.middlewares=https_redirect_permanent@file"
-      # HTTPS
-      - "traefik.http.routers.guac_ssl.rule=Host(`${FQDN_HOST_NAME:?err}`)"
-      - "traefik.http.routers.guac_ssl.entrypoints=https"
-      - "traefik.http.routers.guac_ssl.service=guac"
-      - "traefik.http.routers.guac_ssl.middlewares=guac_headers,guac_addprefix"
-      - "traefik.http.routers.guac_ssl.tls=true"
-      - "traefik.http.routers.guac_ssl.tls.certResolver=le"
-      - "traefik.http.routers.guac_ssl.tls.options=default"
-      # Middleware
-      - "traefik.http.middlewares.guac_headers.headers.stsincludesubdomains=true"
-      - "traefik.http.middlewares.guac_headers.headers.stsseconds=315360000"
-      - "traefik.http.middlewares.guac_headers.headers.forcestsheader=true"
-      - "traefik.http.middlewares.guac_addprefix.addprefix.prefix=/guacamole"
-      # Service
-      - "traefik.http.services.guac.loadbalancer.server.port=8080"
+    #labels:
+      #- "traefik.enable=true"
+      ## HTTP
+      #- "traefik.http.routers.guac.rule=Host(`${FQDN_HOST_NAME:?err}`)"
+      #- "traefik.http.routers.guac.entrypoints=http"
+      #- "traefik.http.routers.guac.middlewares=https_redirect_permanent@file"
+      ## HTTPS
+      #- "traefik.http.routers.guac_ssl.rule=Host(`${FQDN_HOST_NAME:?err}`)"
+      #- "traefik.http.routers.guac_ssl.entrypoints=https"
+      #- "traefik.http.routers.guac_ssl.service=guac"
+      #- "traefik.http.routers.guac_ssl.middlewares=guac_headers,guac_addprefix"
+      #- "traefik.http.routers.guac_ssl.tls=true"
+      #- "traefik.http.routers.guac_ssl.tls.certResolver=le"
+      #- "traefik.http.routers.guac_ssl.tls.options=default"
+      ## Middleware
+      #- "traefik.http.middlewares.guac_headers.headers.stsincludesubdomains=true"
+      #- "traefik.http.middlewares.guac_headers.headers.stsseconds=315360000"
+      #- "traefik.http.middlewares.guac_headers.headers.forcestsheader=true"
+      #- "traefik.http.middlewares.guac_addprefix.addprefix.prefix=/guacamole"
+      ## Service
+      #- "traefik.http.services.guac.loadbalancer.server.port=8080"
 
 networks:
   proxy_net:

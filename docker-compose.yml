@@ -1,46 +1,131 @@
-## Guacamole 20191108
-# @tankmek
-version: "3.1"
- 
+version: '3'
+
 services:
- 
-# Configure MariaDB with persistent storage
-# Need to init the db
-  database:
-    image: mariadb:10.5.13
-    hostname: db
+  traefik:
+    container_name: traefik
+    image: traefik:v2.6
+    networks:
+      - proxy_net
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8088:8080"
+    volumes:
+       - '/var/run/docker.sock:/var/run/docker.sock:ro'
+       - './traefik_conf/traefik.providers.file.toml:/etc/traefik/traefik.providers.file.toml'
+       - './letsencrypt:/letsencrypt'
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    container_name: db 
-    volumes:
-      - "db:/var/lib/mysql"
- 
-# Configure proxy daemon
+      - TRAEFIK_API=true
+      - TRAEFIK_API_DASHBOARD=true
+      - TRAEFIK_API_INSECURE=true
+      - TRAEFIK_CERTIFICATESRESOLVERS_LE=true
+      # - TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_CASERVER=https://acme-staging-v02.api.letsencrypt.org/directory   # Uncomment for using Letsencrypt staging server (Info at https://letsencrypt.org/docs/staging-environment/)
+      - TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_EMAIL=${LE_EMAIL:?err}
+      - TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE=true
+      - TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_HTTPCHALLENGE_ENTRYPOINT=http
+      - TRAEFIK_CERTIFICATESRESOLVERS_LE_ACME_STORAGE=/letsencrypt/acme.json
+      - TRAEFIK_ENTRYPOINTS_HTTP=true
+      - TRAEFIK_ENTRYPOINTS_HTTP_ADDRESS=:80
+      - TRAEFIK_ENTRYPOINTS_HTTPS=true
+      - TRAEFIK_ENTRYPOINTS_HTTPS_ADDRESS=:443
+      - TRAEFIK_GLOBAL_CHECKNEWVERSION=false
+      - TRAEFIK_GLOBAL_SENDANONYMOUSUSAGE=false
+      - TRAEFIK_LOG=true
+      - TRAEFIK_LOG_LEVEL=INFO
+      - TRAEFIK_PROVIDERS_DOCKER=true
+      - TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=false
+      - TRAEFIK_PROVIDERS_DOCKER_NETWORK=${COMPOSE_PROJECT_NAME:-workfromhome-with-docker}_proxy_net
+      - TRAEFIK_PROVIDERS_FILE_FILENAME=/etc/traefik/traefik.providers.file.toml
+      - TRAEFIK_PROVIDERS_FILE_WATCH=true
+
   guacd:
     image: guacamole/guacd
-    container_name: guacd
     restart: always
- 
-# Configure and link Guacamole to db and proxy
+    container_name: guacamole-guacd
+    depends_on:
+      - traefik
+    networks:
+      - backend
+
+  db:
+    image: mysql
+    restart: always
+    container_name: guacamole-db
+    depends_on:
+      - traefik
+    environment:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./mysql_init/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    networks:
+      - backend
+
+
   guacamole:
     image: guacamole/guacamole
-    container_name: guacamole
+    container_name: guacamole-app
     restart: always
+    ports:
+      - 8081:8080
+    links:
+      - guacd:guacd
+      - db:mysql
     depends_on:
-      - database
+      - db
       - guacd
+    volumes:
+      - "./guac_conf/server.xml:/usr/local/tomcat/conf/server.xml"
+      - "./guac_home:/guac_home"
     environment:
-      GUACD_HOSTNAME: ${GUACD_HOSTNAME}
-      MYSQL_HOSTNAME: ${MYSQL_HOSTNAME}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      - GUACAMOLE_HOME: ${GUACAMOLE_HOME}
+      - MYSQL_HOSTNAME: ${MYSQL_HOSTNAME}
+      - MYSQL_DATABASE: ${MYSQL_DATABASE}
+      - MYSQL_USER: ${MYSQL_USER}
+      - MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      - GUACD_HOSTNAME: ${GUACD_HOSTNAME}
+      - GUACD_PORT: ${GUACD_PORT}
+      - LDAP_HOSTNAME: ${LDAP_HOSTNAME}
+      - LDAP_PORT: ${LDAP_PORT}
+      - LDAP_ENCRYPTION_METHOD: ${LDAP_ENCRYPTION_METHOD}
+      - LDAP_USER_BASE_DN: ${LDAP_USER_BASE_DN}
+      - LDAP_GROUP_BASE_DN: ${LDAP_GROUP_BASE_DN}
+      - LDAP_SEARCH_BIND_DN: ${LDAP_SEARCH_BIND_DN}
+      - LDAP_SEARCH_BIND_PASSWORD: ${LDAP_SEARCH_BIND_PASSWORD}
+      - LDAP_USERNAME_ATTRIBUTE: ${LDAP_USERNAME_ATTRIBUTE}
+      - LDAP_GROUP_NAME_ATTRIBUTE: ${LDAP_GROUP_NAME_ATTRIBUTE}
+      - LDAP_MEMBER_ATTRIBUTE: ${LDAP_MEMBER_ATTRIBUTE}
+      - LDAP_USER_SEARCH_FILTER: ${LDAP_USER_SEARCH_FILTER}
+      - TOTP_ISSUER: ${FQDN_HOST_NAME}
+    networks:
+      - backend
+      - proxy_net
+    labels:
+      - "traefik.enable=true"
+      # HTTP
+      - "traefik.http.routers.guac.rule=Host(`${FQDN_HOST_NAME:?err}`)"
+      - "traefik.http.routers.guac.entrypoints=http"
+      - "traefik.http.routers.guac.middlewares=https_redirect_permanent@file"
+      # HTTPS
+      - "traefik.http.routers.guac_ssl.rule=Host(`${FQDN_HOST_NAME:?err}`)"
+      - "traefik.http.routers.guac_ssl.entrypoints=https"
+      - "traefik.http.routers.guac_ssl.service=guac"
+      - "traefik.http.routers.guac_ssl.middlewares=guac_headers,guac_addprefix"
+      - "traefik.http.routers.guac_ssl.tls=true"
+      - "traefik.http.routers.guac_ssl.tls.certResolver=le"
+      - "traefik.http.routers.guac_ssl.tls.options=default"
+      # Middleware
+      - "traefik.http.middlewares.guac_headers.headers.stsincludesubdomains=true"
+      - "traefik.http.middlewares.guac_headers.headers.stsseconds=315360000"
+      - "traefik.http.middlewares.guac_headers.headers.forcestsheader=true"
+      - "traefik.http.middlewares.guac_addprefix.addprefix.prefix=/guacamole"
+      # Service
+      - "traefik.http.services.guac.loadbalancer.server.port=8080"
 
-# This volume has to be created before docker-compose up
-volumes:
-  db:
-    external: true
+networks:
+  proxy_net:
+  backend:

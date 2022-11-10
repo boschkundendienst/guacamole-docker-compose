@@ -45,20 +45,20 @@ services:
     - ./record:/record:rw
 
   # postgres
-  postgres:
-    container_name: ${POSTGRES_CONTAINER_NAME}
-    image: ${POSTGRES_IMAGE}
-    environment:
-      PGDATA: ${POSTGRES_DATA}
-      POSTGRES_DB: ${POSTGRES_DATABASE}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_USER: ${POSTGRES_USER}
-    networks:
-      guacnetwork_compose:
-    restart: always
-    volumes:
-    - ./init:/docker-entrypoint-initdb.d:z
-    - ./data:/var/lib/postgresql/data:Z
+  #postgres:
+  #  container_name: ${POSTGRES_CONTAINER_NAME}
+  #  image: ${POSTGRES_IMAGE}
+  #  environment:
+  #    PGDATA: ${POSTGRES_DATA}
+  #    POSTGRES_DB: ${POSTGRES_DATABASE}
+  #    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #    POSTGRES_USER: ${POSTGRES_USER}
+  #  networks:
+  #    guacnetwork_compose:
+  #  restart: always
+  #  volumes:
+  #  - ./init:/docker-entrypoint-initdb.d:z
+  #  - ./data:/var/lib/postgresql/data:Z
 
   # guacamole
   guacamole:
@@ -69,11 +69,11 @@ services:
     - postgres
     environment:
       GUACD_HOSTNAME: ${GUACD_HOSTNAME}
+      GUACAMOLE_HOME: ${GUACAMOLE_HOME}
       POSTGRES_DATABASE: ${POSTGRES_DATABASE}
       POSTGRES_HOSTNAME: ${POSTGRES_HOSTNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_USER: ${POSTGRES_USER}
-      GUACAMOLE_HOME: ${GUACAMOLE_HOME}
     links:
     - guacd
     networks:
@@ -84,17 +84,17 @@ services:
     volumes:
     - "./guac_home:/guac_home"
 
-  #mysql:
-  #  image: mysql
-  #  restart: always
-  #  container_name: ${MYSQL_CONTAINER_NAME}
-  #  environment:
-  #      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-  #      MYSQL_USER: ${MYSQL_USER}
-  #      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-  #      MYSQL_DATABASE: ${MYSQL_DATABASE}
-  #  volumes:
-  #      - "./mysql:/var/lib/mysql"
-  #      - "./mysql_init/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro"
-  #  networks:
-  #    guacnetwork_compose:
+  mysql:
+    image: mysql
+    restart: always
+    container_name: ${MYSQL_CONTAINER_NAME}
+    environment:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+        - "./mysql:/var/lib/mysql"
+        - "./mysql_init/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro"
+    networks:
+      guacnetwork_compose:

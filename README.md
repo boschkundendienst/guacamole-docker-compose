@@ -106,27 +106,25 @@ The following part of docker-compose.yml will create an instance of guacamole by
 ~~~
 
 #### nginx
-The following part of docker-compose.yml will create an instance of nginx that maps the public port 8443 to the internal port 443. The internal port 443 is then mapped to guacamole using the `./nginx.conf` and `./nginx/mysite.template` files. The container will use the previously generated (`prepare.sh`) self-signed certificate in `./nginx/ssl/` with `./nginx/ssl/self-ssl.key` and `./nginx/ssl/self.cert`.
+The following part of docker-compose.yml will create an instance of nginx that maps the public port 8443 to the internal port 443. The internal port 443 is then mapped to guacamole using the `./nginx/templates/guacamole.conf.template` file. The container will use the previously generated (`prepare.sh`) self-signed certificate in `./nginx/ssl/` with `./nginx/ssl/self-ssl.key` and `./nginx/ssl/self.cert`.
 
 ~~~python
 ...
+  # nginx
   nginx:
    container_name: nginx_guacamole_compose
    restart: always
    image: nginx
    volumes:
+   - ./nginx/templates:/etc/nginx/templates:ro
    - ./nginx/ssl/self.cert:/etc/nginx/ssl/self.cert:ro
    - ./nginx/ssl/self-ssl.key:/etc/nginx/ssl/self-ssl.key:ro
-   - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-   - ./nginx/mysite.template:/etc/nginx/conf.d/default.conf:ro
    ports:
    - 8443:443
    links:
    - guacamole
    networks:
      guacnetwork_compose:
-   # run nginx
-   command: /bin/bash -c "nginx -g 'daemon off;'"
 ...
 ~~~
 

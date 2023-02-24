@@ -1,0 +1,41 @@
+### BBB
+server {
+    listen       443 ssl http2;
+    server_name  localhost;
+
+        ssl_certificate /etc/nginx/ssl/self.cert;
+        ssl_certificate_key /etc/nginx/ssl/self-ssl.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_prefer_server_ciphers on;
+        ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+        ssl_ecdh_curve secp384r1;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_tickets off;
+        ssl_stapling off;
+        ssl_stapling_verify off;
+
+    location / {
+    proxy_pass http://guacamole:8080/guacamole/;
+    proxy_buffering off;
+    proxy_http_version 1.1;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $http_connection;
+    proxy_cookie_path /guacamole/ /;
+    access_log off;
+    # allow large uploads (default=1m)
+    # 4096m = 4GByte
+    client_max_body_size 4096m;
+}
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+}

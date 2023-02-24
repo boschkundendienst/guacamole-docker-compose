@@ -42,23 +42,23 @@
 #  as configured under (1)
 #
 # (3)
-#  ./nginx/nginx.conf will be mapped read-only into the container at /etc/nginx/nginx.conf
-#  ./nginx/mysite.template will be mapped into the container at /etc/nginx/conf.d/mysite.template
+#  ./nginx/templates folder will be mapped read-only into the container at /etc/nginx/templates
+#  and according to the official nginx container docs the guacamole.conf.template will be
+#  placed in /etc/nginx/conf.d/guacamole.conf after container startup.
 #  ./nginx/ssl will be mapped into the container at /etc/nginx/ssl
-#  At startup a self-signed certificate will be created. If you want to use your own certs
-#  just remove the part that generates the certs from the 'command' section and replace
+#  prepare.sh creates a a self-signed certificate. If you want to use your own certs
+#  just remove the part that generates the certs from prepare.sh and replace
 #  'self-ssl.key' and 'self.cert' with your certificate.
-#  To debug nginx replace '&& nginx -g 'daemon off' with '&& nginx-debug -g 'daemon off'
 #  nginx will export port 8443 to the outside world, make sure that this port is reachable
-#  on your system from the "outside world". All other traffice is only internal.
+#  on your system from the "outside world". All other traffic is only internal.
 #
 #  You could remove the entire 'nginx' service from this file if you want to use your own
 #  reverse proxy in front of guacamole. If doing so, make sure you change the line
-#       - 8080/tcp
-#   to   - 8080:8080/tcp
+#   from     - 8080/tcp
+#   to       - 8080:8080/tcp
 #  within the 'guacamole' service. This will expose the guacamole webinterface directly
 #  on port 8080 and you can use it for your own purposes.
-#  Do note, guacamole is available on :8080/guacamole, not /.
+#  Note: Guacamole is available on :8080/guacamole, not /.
 #
 # !!!!! FOR INITAL SETUP (after git clone) run ./prepare.sh once
 #
@@ -79,7 +79,8 @@
 # 0.3                2017-10-09        minor fixes + public GIT push
 # 0.4                2019-08-14        creating of ssl certs now in prepare.sh
 #                                      simplified nginx startup commands
-####################################################################################
+# 0.5                2023-02-24        nginx now uses a template + some minor changes
+#####################################################################################
 
 version: '2.0'
 
@@ -148,18 +149,13 @@ services:
    restart: always
    image: nginx
    volumes:
+   - ./nginx/templates:/etc/nginx/templates:ro
    - ./nginx/ssl/self.cert:/etc/nginx/ssl/self.cert:ro
    - ./nginx/ssl/self-ssl.key:/etc/nginx/ssl/self-ssl.key:ro
-   - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-   - ./nginx/mysite.template:/etc/nginx/conf.d/default.conf:ro
    ports:
    - 8443:443
    links:
    - guacamole
    networks:
      guacnetwork_compose:
-   # run nginx
-   command: /bin/bash -c "nginx -g 'daemon off;'"
-# nginx-debug-mode
-#   command: /bin/bash -c "nginx-debug -g 'daemon off;'"
 ####################################################################################

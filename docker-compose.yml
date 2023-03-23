@@ -80,6 +80,7 @@
 # 0.4                2019-08-14        creating of ssl certs now in prepare.sh
 #                                      simplified nginx startup commands
 # 0.5                2023-02-24        nginx now uses a template + some minor changes
+# 0.6                2023-03-23        switched to postgres 15.2-alpine
 #####################################################################################
 
 version: '2.0'

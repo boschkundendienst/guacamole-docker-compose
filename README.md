@@ -10,6 +10,9 @@ It supports RDP, SSH, Telnet and VNC and is the fastest HTML5 gateway I know. Ch
 You need a working **docker** installation and **docker-compose** running on your machine.
 
 ## Quick start
+
+### Unix
+
 Clone the GIT repository and start guacamole:
 
 ~~~bash
@@ -20,6 +23,20 @@ docker-compose up -d
 ~~~
 
 Your guacamole server should now be available at `https://ip of your server:8443/`. The default username is `guacadmin` with password `guacadmin`.
+
+### Windows
+
+Clone the GIT repository and start guacamole:
+
+~~~bash
+git clone "https://github.com/boschkundendienst/guacamole-docker-compose.git"
+cd guacamole-docker-compose
+./prepare.ps1
+docker compose up -d
+~~~
+
+Your guacamole server should now be available at `https://ip of your server:8443/`. The default username is `guacadmin` with password `guacadmin`.
+
 
 ## Details
 To understand some details let's take a closer look at parts of the `docker-compose.yml` file:

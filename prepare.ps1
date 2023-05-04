@@ -1,0 +1,1 @@
+docker run -it --rm -v ${PWD}/init:/init -v ${PWD}/nginx:/nginx -v ${PWD}:/x -v /var/run/docker.sock:/var/run/docker.sock docker sh -c "cd /x && ./prepare.sh"

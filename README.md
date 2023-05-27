@@ -132,7 +132,7 @@ The following part of docker-compose.yml will create an instance of nginx that m
 `prepare.sh` is a small script that creates `./init/initdb.sql` by downloading the docker image `guacamole/guacamole` and start it like this:
 
 ~~~bash
-docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgres > ./init/initdb.sql
+docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgresql > ./init/initdb.sql
 ~~~
 
 It creates the necessary database initialization file for postgres.

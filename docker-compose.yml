@@ -20,7 +20,7 @@
 #
 # (1)
 #  DB-Init script is in './init/initdb.sql' it has been created executing
-#  'docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgres > ./init/initdb.sql'
+#  'docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgresql > ./init/initdb.sql'
 #  once.
 #  DATA-DIR       is in './data'
 #  If you want to change the DB password change all lines with 'POSTGRES_PASSWORD:' and

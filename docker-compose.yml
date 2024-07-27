@@ -82,9 +82,11 @@
 # 0.5                2023-02-24        nginx now uses a template + some minor changes
 # 0.6                2023-03-23        switched to postgres 15.2-alpine
 # 0.61               2024-07-27        fix networks + version 3.0
+# 0.62               2024-07-27        fix
 #####################################################################################
 
-version: '3.0'
+#the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+#version: '3.0'
 
 # networks
 # create a network 'guacnetwork_compose' in mode 'bridged'
@@ -109,9 +111,9 @@ services:
     container_name: postgres_guacamole_compose
     environment:
       PGDATA: /var/lib/postgresql/data/guacamole
-      POSTGRESQL_DB: guacamole_db
-      POSTGRESQL_PASSWORD: 'ChooseYourOwnPasswordHere1234'
-      POSTGRESQL_USER: guacamole_user
+      POSTGRES_DB: guacamole_db
+      POSTGRES_PASSWORD: 'ChooseYourOwnPasswordHere1234'
+      POSTGRES_USER: guacamole_user
     image: postgres:15.2-alpine
     networks:
       - guacnetwork_compose
@@ -128,15 +130,15 @@ services:
     - postgres
     environment:
       GUACD_HOSTNAME: guacd
-      POSTGRESQL_DATABASE: guacamole_db
-      POSTGRESQL_HOSTNAME: postgres
-      POSTGRESQL_PASSWORD: 'ChooseYourOwnPasswordHere1234'
-      POSTGRESQL_USER: guacamole_user
+      POSTGRES_DATABASE: guacamole_db
+      POSTGRES_HOSTNAME: postgres
+      POSTGRES_PASSWORD: 'ChooseYourOwnPasswordHere1234'
+      POSTGRES_USER: guacamole_user
     image: guacamole/guacamole
-    links:
-    - guacd
     networks:
       - guacnetwork_compose
+    volumes:
+      - ./record:/record:rw
     ports:
 ## enable next line if not using nginx
 ##    - 8080:8080/tcp # Guacamole is on :8080/guacamole, not /.

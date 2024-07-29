@@ -13,10 +13,10 @@
 # Using docker-compose it will:
 #
 # - create a network 'guacnetwork_compose' with the 'bridge' driver.
-# - create a service 'guacd_compose' from 'guacamole/guacd' connected to 'guacnetwork'
-# - create a service 'postgres_guacamole_compose' (1) from 'postgres' connected to 'guacnetwork'
-# - create a service 'guacamole_compose' (2)  from 'guacamole/guacamole/' conn. to 'guacnetwork'
-# - create a service 'nginx_guacamole_compose' (3) from 'nginx' connected to 'guacnetwork'
+# - create a service 'guacd_compose' from 'guacamole/guacd' connected to 'guacnetwork_compose'
+# - create a service 'postgres_guacamole_compose' (1) from 'postgres' connected to 'guacnetwork_compose'
+# - create a service 'guacamole_compose' (2)  from 'guacamole/guacamole/' conn. to 'guacnetwork_compose'
+# - create a service 'nginx_guacamole_compose' (3) from 'nginx' connected to 'guacnetwork_compose'
 #
 # (1)
 #  DB-Init script is in './init/initdb.sql' it has been created executing
@@ -81,9 +81,12 @@
 #                                      simplified nginx startup commands
 # 0.5                2023-02-24        nginx now uses a template + some minor changes
 # 0.6                2023-03-23        switched to postgres 15.2-alpine
+# 0.61               2024-07-27        fix networks + version 3.0
+# 0.62               2024-07-27        fix
 #####################################################################################
 
-version: '2.0'
+#the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+#version: '3.0'
 
 # networks
 # create a network 'guacnetwork_compose' in mode 'bridged'
@@ -98,7 +101,7 @@ services:
     container_name: guacd_compose
     image: guacamole/guacd
     networks:
-      guacnetwork_compose:
+      - guacnetwork_compose
     restart: always
     volumes:
     - ./drive:/drive:rw
@@ -113,7 +116,7 @@ services:
       POSTGRES_USER: guacamole_user
     image: postgres:15.2-alpine
     networks:
-      guacnetwork_compose:
+      - guacnetwork_compose
     restart: always
     volumes:
     - ./init:/docker-entrypoint-initdb.d:z
@@ -132,10 +135,10 @@ services:
       POSTGRES_PASSWORD: 'ChooseYourOwnPasswordHere1234'
       POSTGRES_USER: guacamole_user
     image: guacamole/guacamole
-    links:
-    - guacd
     networks:
-      guacnetwork_compose:
+      - guacnetwork_compose
+    volumes:
+      - ./record:/record:rw
     ports:
 ## enable next line if not using nginx
 ##    - 8080:8080/tcp # Guacamole is on :8080/guacamole, not /.
@@ -148,15 +151,13 @@ services:
   nginx:
    container_name: nginx_guacamole_compose
    restart: always
-   image: nginx
+   image: nginx:latest
    volumes:
    - ./nginx/templates:/etc/nginx/templates:ro
    - ./nginx/ssl/self.cert:/etc/nginx/ssl/self.cert:ro
    - ./nginx/ssl/self-ssl.key:/etc/nginx/ssl/self-ssl.key:ro
    ports:
    - 8443:443
-   links:
-   - guacamole
    networks:
-     guacnetwork_compose:
+     - guacnetwork_compose
 ####################################################################################

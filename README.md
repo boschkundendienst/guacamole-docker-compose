@@ -1,5 +1,5 @@
-# Guacamole with docker-compose
-This is a small documentation how to run a fully working **Apache Guacamole (incubating)** instance with docker (docker-compose). The goal of this project is to make it easy to test Guacamole.
+# Guacamole with docker compose
+This is a small documentation how to run a fully working **Apache Guacamole (incubating)** instance with docker (docker compose). The goal of this project is to make it easy to test Guacamole.
 
 ## About Guacamole
 Apache Guacamole (incubating) is a clientless remote desktop gateway. It supports standard protocols like VNC, RDP, and SSH. It is called clientless because no plugins or client software are required. Thanks to HTML5, once Guacamole is installed on a server, all you need to access your desktops is a web browser.
@@ -7,7 +7,7 @@ Apache Guacamole (incubating) is a clientless remote desktop gateway. It support
 It supports RDP, SSH, Telnet and VNC and is the fastest HTML5 gateway I know. Checkout the projects [homepage](https://guacamole.incubator.apache.org/) for more information.
 
 ## Prerequisites
-You need a working **docker** installation and **docker-compose** running on your machine.
+You need a working **docker** installation and **docker compose** running on your machine.
 
 ## Quick start
 Clone the GIT repository and start guacamole:
@@ -16,7 +16,7 @@ Clone the GIT repository and start guacamole:
 git clone "https://github.com/boschkundendienst/guacamole-docker-compose.git"
 cd guacamole-docker-compose
 ./prepare.sh
-docker-compose up -d
+docker compose up -d
 ~~~
 
 Your guacamole server should now be available at `https://ip of your server:8443/`. The default username is `guacadmin` with password `guacadmin`.

@@ -42,7 +42,7 @@ else
     wget -c -P ./extensions $URL
 fi
 
-FILE="guacamole-history-recording-storage-1.5.5.tar.gz"
+FILE="guacamole-history-recording-storage-$GUAC_VERSION.tar.gz"
 URL="https://apache.org/dyn/closer.lua/guacamole/$GUAC_VERSION/binary/$FILE"
 LOCAL_PATH="./extensions/$FILE"
 if test -f "$LOCAL_PATH"; then

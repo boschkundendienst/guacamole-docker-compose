@@ -134,6 +134,7 @@ services:
       POSTGRES_HOSTNAME: postgres
       POSTGRES_PASSWORD: 'ChooseYourOwnPasswordHere1234'
       POSTGRES_USER: guacamole_user
+      RECORDING_SEARCH_PATH: /record
     image: guacamole/guacamole
     networks:
       - guacnetwork_compose

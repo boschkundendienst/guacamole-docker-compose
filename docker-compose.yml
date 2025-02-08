@@ -126,7 +126,7 @@ services:
   guacamole:
     container_name: guacamole_compose
     group_add:
-      - 1000
+      - "1000"
     depends_on:
     - guacd
     - postgres

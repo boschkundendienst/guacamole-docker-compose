@@ -157,6 +157,8 @@ services:
    container_name: nginx_guacamole_compose
    restart: always
    image: nginx:latest
+   depends_on:
+      - guacamole
    volumes:
    - ./nginx/templates:/etc/nginx/templates:ro
    - ./nginx/ssl/self.cert:/etc/nginx/ssl/self.cert:ro

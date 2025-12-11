@@ -1,0 +1,73 @@
+version: '2'
+
+# networks
+networks:
+  guacnetwork_compose:
+    driver: bridge
+
+# services
+services:
+  # guacd
+  guacd:
+    container_name: guacd_compose
+    image: guacamole/guacd:1.6.0
+    networks:
+      - guacnetwork_compose
+    restart: always
+    volumes:
+    - ./drive:/drive:rw
+    - ./record:/record:rw
+
+  # postgres
+  postgres:
+    container_name: postgres_guacamole_compose
+    environment:
+      PGDATA: /var/lib/postgresql/data/guacamole
+      POSTGRES_DB: guacamole_db
+      POSTGRES_PASSWORD: 'ChooseYourOwnPasswordHere1234'
+      POSTGRES_USER: guacamole_user
+    image: postgres:15.2-alpine
+    networks:
+      - guacnetwork_compose
+    restart: always
+    volumes:
+    - ./init:/docker-entrypoint-initdb.d:ro
+    - ./data:/var/lib/postgresql/data
+
+  # guacamole
+  guacamole:
+    container_name: guacamole_compose
+    depends_on:
+    - guacd
+    - postgres
+    environment:
+      GUACD_HOSTNAME: guacd
+      POSTGRESQL_DATABASE: guacamole_db
+      POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_PASSWORD: 'ChooseYourOwnPasswordHere1234'
+      POSTGRESQL_USERNAME: guacamole_user
+      RECORDING_SEARCH_PATH: /record
+    image: guacamole/guacamole:1.6.0
+    networks:
+      - guacnetwork_compose
+    volumes:
+      - ./record:/record:rw
+    expose:
+      - "8080"
+    restart: always
+
+  # nginx
+  nginx:
+   container_name: nginx_guacamole_compose
+   restart: always
+   image: nginx:latest
+   volumes:
+   - ./nginx/templates:/etc/nginx/templates:ro
+   - ./nginx/ssl/self.cert:/etc/nginx/ssl/self.cert:ro
+   - ./nginx/ssl/self-ssl.key:/etc/nginx/ssl/self-ssl.key:ro
+   ports:
+   - "8443:443"
+   networks:
+     - guacnetwork_compose
+   depends_on:
+     - guacamole
